@@ -1,8 +1,121 @@
 ## MyMN official explorer
 
+## Explorer guide
+## ===============
+
+### install required nodejs ver. v6 on 16.04, v8 on 18.04 ubuntu
+
+* sudo apt-get update
+* sudo curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+* sudo apt-get install -y nodejs
+* sudo npm install
+* sudo apt-get install
+
+
+## Install Mongo DB
+## ================
+
+* sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+* echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+* sudo apt-get update
+* sudo apt-get install -y mongodb-org
+* sudo systemctl start mongod
+* sudo npm install forever -g
+
+
+## Start mongodb cli:
+## =================
+
+#db.createUser( { user: "iquidus", pwd: "3xp!0reR", roles: [ "readWrite" ] } )
+#old iquidus
+
+mongo
+
+* use explorerdb
+* db.createUser( { user: "ciquidus", pwd: "3xp!0reR", roles: [ "readWrite" ] } )
+* exit
+
+
+## Install Explorer
+## ================
+
+* git clone https://github.com/MyMNProject/mymn-explorer.git explorer
+
+* cd explorer && npm install --production
+
+* cp ./settings.json.template ./settings.json
+
+### Editing settings.json
+
+**Blockchain api**
+Go to windows wallet -> transactions tab > find a transaction and right click showtransactions details, copy address into the settings file. Then copy transaction hash
+and go to debug screen and type(ignore the <> signs): gettransaction <paste transaction hash here>
+
+sample transaction hash: 3014b61641fd17e496fe13163e1c5a3f0e36e8db1a6aa66088bb0667c6f84618
+
+sample command: gettransaction 3014b61641fd17e496fe13163e1c5a3f0e36e8db1a6aa66088bb0667c6f84618
+
+past the transaction hash into the table under **txhash**
+
+copy block hash into the table under **blockhash**
+
+In debug screen again, type in command(ignore < > signs): getblock <paste block hash here>
+
+sample: getblock a2dd13140ab068c7339c8f2f9f81485a497ea22696798c90c4e6099bffec9546
+
+copy the height and paste in **blockindex** in the table.
+sample block height: 52
+
+sample address: XPP8VCLpFhTDjS2UDshq8k1adDriziRoW7
+
+sample data:
+"api": {
+    "blockindex": 52,
+    "blockhash": "00000000001b8c30360db57b575b3c2bf668b0ed50683f567afd47ae1773efb8",
+    "txhash": "3014b61641fd17e496fe13163e1c5a3f0e36e8db1a6aa66088bb0667c6f84618",
+    "address": "XPP8VCLpFhTDjS2UDshq8k1adDriziRoW7"
+  },
+
+## Setting genesis in table
+Go to debug and type **getblockhash**. Copy hash into table under genesis_block.
+
+sample genesis hash: 9c661341062791ebc601c5082842642df88f6462f6378a51cc5ec0a5e4c37060
+
+type in debug command: getblock <paste your genesis hash here>
+
+sample command: getblock 7f1ed91786d6a81cd2a6c4f32b3a3b1cec0f7f14ac388bc8c72d8dcfc415ff28
+
+sample tx: 7f1ed91786d6a81cd2a6c4f32b3a3b1cec0f7f14ac388bc8c72d8dcfc415ff28
+
+copy tx in table under genesis_tx.
+
+"genesis_tx": "7f1ed91786d6a81cd2a6c4f32b3a3b1cec0f7f14ac388bc8c72d8dcfc415ff28",
+  "genesis_block": "9c661341062791ebc601c5082842642df88f6462f6378a51cc5ec0a5e4c37060",
+ 
+
+
+### To use forever to start (run in directory of explorer):
+
+forever start -c "npm start" ./
+
+### Start reindexing the blocks
+
+node scripts/sync.js index reindex
+
+crontab -e
+
+crontab information:
+
+```
+*/1 * * * * cd /root/explorer && /usr/bin/nodejs scripts/sync.js index update > /dev/null 2>&1
+*/2 * * * * cd /root/explorer && /usr/bin/nodejs scripts/masternodes.js > /dev/null 2>&1
+*/5 * * * * cd /root/explorer && /usr/bin/nodejs scripts/peers.js > /dev/null 2>&1
+```
 
 
 
+
+----------------------------------------------------------------------------------
 
 Ciquidus Alpha - 1.7.1
 ================
